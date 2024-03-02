@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - NAME=donatex
+      - DATABASE_URL=postgres://postgres:DonateX!23@db:5432/db_donateX
+      - USE_DOCKER=true
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=DonateX!23
+      - POSTGRES_DB=db_donateX
+
+  web:
+    build: .
+    command: ["/bin/bash", "-c", "/usr/wait-for-postgres.sh db python manage.py runserver 0.0.0.0:8000"]
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+    environment:
+      - NAME=donatex
+      - DATABASE_URL=postgres://postgres:DonateX!23@db:5432/db_donateX
+      - USE_DOCKER=true
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=DonateX!23
+      - POSTGRES_DB=db_donateX
+
+volumes:
+  postgres_data:

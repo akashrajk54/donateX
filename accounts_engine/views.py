@@ -80,19 +80,23 @@ class CustomUserViewSet(ModelViewSet):
                             logger_error.error(message)
                             return Response(success_false_response(message=message), status=e.status_code)
 
-                print(serializer.data)
                 self.perform_create(serializer)
                 instance = serializer.instance
-                sms_details = send_otp(instance.contact)
+
+                # Perform modifications before accessing serializer.data
+                domain = request.get_host()
+                sms_details = send_otp(instance.contact, domain)
                 if sms_details['success']:
                     instance.otp = sms_details['otp']
                     instance.otp_send_datetime = timezone.now()
                     instance.password = make_password(instance.password)
                     instance.save()
 
-                    message = f'Successfully signup verification otp send : {sms_details["otp"]}'
+                    message = f'Successfully signup verification otp send'
                     logger_info.info(f'{message} Phone number: {instance.contact}')
-                    return Response(success_true_response(message=message))
+                    headers = self.get_success_headers(
+                        serializer.data)
+                    return Response(success_true_response(message=message), headers=headers)
 
                 else:
                     instance.delete()
@@ -107,7 +111,7 @@ class CustomUserViewSet(ModelViewSet):
             user.otp = sms_details['otp']
             user.otp_send_datetime = timezone.now()
             user.save()
-            message = f'Successfully login verification otp send : {sms_details["otp"]}'
+            message = f'Successfully login verification otp send'
             logger_info.info(f'{message} Phone number: {user.contact}')
             return Response(success_true_response(message=message))
 
