@@ -15,10 +15,13 @@ __pycache__/
 # Environments
 .venv
 env/
+.env/
 
 # Migrations
 accounts_engine/migrations/
+accounts_engine/__init__.py
 backoffice_engine/migrations/
+backoffice_engine/__init__.py
 
 # C extensions
 *.so

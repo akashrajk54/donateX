@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+from datetime import timedelta
+from dotenv import load_dotenv
+load_dotenv()
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,13 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-au@_s)zrb5fuan-bxdk4)f!k^#y6wrm8n61$2a--gw)%zy-k3='
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
+REST_FRAMEWORK = {
+  'DEFAULT_AUTHENTICATION_CLASSES': (
+    'rest_framework.authentication.TokenAuthentication',
+  ),
+  'DEFAULT_RENDERER_CLASSES': (
+    'rest_framework.renderers.JSONRenderer',
+  ),
+}
 
 # Application definition
 
@@ -37,6 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts_engine',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'rest_framework',
+    'phonenumber_field',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'donateX.custom_middleware.TokenInvalidatedMiddleware',
 ]
 
 ROOT_URLCONF = 'donateX.urls'
@@ -71,18 +88,19 @@ WSGI_APPLICATION = 'donateX.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -115,9 +133,93 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=180),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer', ),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken', ),
+}
+
+
+# Logger
+FORMATTERS = [
+    {
+        'verbose': {
+            'format': "{levelname} TIME: {asctime:s} MODULE: {module} LINENO: {lineno:d} MESSAGE: {message}",
+            'style': "{",
+        },
+        'simple': {
+            'format': '{levelname} TIME: {asctime:s} MODULE: {module} LINENO: {lineno:d} MESSAGE: {message}',
+            'style': "{",
+        },
+    },
+]
+
+
+HANDLERS = {
+    'console_handler': {
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple',
+    },
+    'error_handler': {
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': f"{BASE_DIR}/logs/log.log",
+        'mode': 'a',
+        'encoding': 'utf-8',
+        'formatter': 'simple',
+        'backupCount': 5,
+        'maxBytes': 1024*1024*5,
+    },
+    'info_handler': {
+        'class': 'logging.handlers.RotatingFileHandler',
+        'filename': f"{BASE_DIR}/logs/log.log",
+        'mode': 'a',
+        'formatter': 'verbose',
+        'backupCount': 5,
+        'maxBytes': 1024 * 1024 * 5,
+    }
+
+}
+
+
+LOGGERS = [
+    {
+        'info': {
+            'handlers': ['console_handler', 'info_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'error': {
+            'handlers': ['error_handler'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': FORMATTERS[0],
+    'handlers': HANDLERS,
+    'loggers': LOGGERS[0],
+}
+
+AUTH_USER_MODEL = 'accounts_engine.CustomUser'
+
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
+
