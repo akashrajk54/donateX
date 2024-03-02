@@ -78,3 +78,20 @@ class InvalidatedToken(models.Model):
     token = models.TextField(unique=True)
     invalidated_at = models.DateTimeField(auto_now_add=True)
 
+
+class UserDonation(BaseClass):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="customuser_userdonation",
+                             null=True, blank=True)
+    payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
+    checkout_session_id = models.CharField(max_length=255, blank=True, null=True)
+    customer_id = models.CharField(max_length=255, blank=True, null=True)
+    amount_total = models.FloatField(null=True, blank=True)
+    payment_status = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'User Donation'
+        verbose_name_plural = 'User Donations'
+
+    def __str__(self):
+        return f'Amount {self.amount_total} | Donated by: {self.user.contact.national_number}'
+

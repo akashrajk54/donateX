@@ -6,3 +6,5 @@ python-dotenv==1.0.0
 django-phonenumber-field==7.3.0
 django-filter==23.5
 twilio==8.9.1
+stripe==7.0.0
+

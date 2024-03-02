@@ -62,3 +62,11 @@ def check_otp(user, input_otp):
     return verification_details
 
 
+def get_stripe_api_key():
+    current_mode = os.getenv('CURRENT_MODE')
+    secret_api_key = ''
+    if current_mode == 'live':
+        secret_api_key = os.getenv('LIVE_STRIPE_SECRET_KEY_AYO')
+    elif current_mode == 'test':
+        secret_api_key = os.getenv('TEST_STRIPE_SECRET_KEY_AYO')
+    return secret_api_key

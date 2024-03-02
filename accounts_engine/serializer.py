@@ -5,7 +5,7 @@ from django.utils.html import strip_tags
 
 from accounts_engine.utils import remove_special_char, has_country_code
 
-from accounts_engine.models import CustomUser
+from accounts_engine.models import CustomUser, UserDonation
 
 
 class CustomUserSerializer(ModelSerializer):
@@ -50,3 +50,20 @@ class CustomUserSerializer(ModelSerializer):
 
 class VerifyAccountSerializer(serializers.Serializer):
     otp = serializers.CharField()
+
+
+class UserDonationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDonation
+        fields = '__all__'
+
+    def get_fields(self):
+        fields = super().get_fields()
+        request_method = self.context.get('request').method
+
+        if request_method == 'GET':
+            # Include only specific fields during GET request
+            allowed_fields = ('amount_total', 'payment_status', 'created_date')
+            fields = {field: fields[field] for field in allowed_fields}
+
+        return fields
