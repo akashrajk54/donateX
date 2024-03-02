@@ -27,29 +27,48 @@ SECRET_KEY='django-insecure-au@_s)zrb5fuan-bxdk4)f!k^#y6wrm8n61$2a--gw)%zy-k3='
 
 # DATABASE
 DATABASE_NAME=''
+
 DATABASE_USER=''
+
 DATABASE_PASSWORD=''
+
 DATABASE_HOST='localhost'
+
 DATABASE_PORT='5432'
 
 MAX_TIME_LIMIT_TO_VERIFY_OTP='3'
 
+# Twilio Configuration
+
 TWILIO_ACCOUNT_SID=''
+
 TWILIO_AUTH_TOKEN=''
+
 TWILIO_PHONE_NUMBER=''
 
 # Stripe Configuration
+
 CURRENT_MODE="test" # test/live
+
 TEST_STRIPE_SECRET_KEY_AYO=""
+
 TEST_STRIPE_PUBLIC_KEY_AYO=""
+
 LIVE_STRIPE_SECRET_KEY_AYO=""
+
 LIVE_STRIPE_PUBLIC_KEY_AYO=""
 
+
 TEST_STRIPE_SUCCESS_URL=''
+
 TEST_STRIPE_CANCEL_URL=''
+
 LIVE_STRIPE_SUCCESS_URL=''
+
 LIVE_STRIPE_CANCEL_URL=''
+
 TEST_STRIPE_WEBHOOK_SECRET=''
+
 LIVE_STRIPE_WEBHOOK_SECRET=''
 
 USE_DOCKER='true'
@@ -57,12 +76,12 @@ USE_DOCKER='true'
 3. Also update the .yml file db cred as per yours
 
 4. Run the application using Docker:
-docker-compose up --build
+`docker-compose up --build`
 
 This command builds the Docker images and starts the containers.
 
 5. To check the status of the running containers, use:
-docker-compose ps
+`docker-compose ps`
 
 
 ## Manual Database Migrations
@@ -71,13 +90,14 @@ If the database tables are not migrated automatically, you can perform manual mi
 
 1. Access the web container's bash:
 
-docker-compose exec web bash
+`docker-compose exec web bash`
 
 
 2. Inside the container, run the Django migrations:
 
-python manage.py makemigrations
-python manage.py migrate
+`python manage.py makemigrations`
+
+`python manage.py migrate`
 
 
 3. To exit the container, type `exit`.
