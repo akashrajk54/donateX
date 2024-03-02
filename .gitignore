@@ -3,6 +3,23 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# If you are using PyCharm #
+# User-specific stuff
+.idea/*
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+
+# Environments
+.venv
+env/
+
+# Migrations
+accounts_engine/migrations/
+backoffice_engine/migrations/
+
 # C extensions
 *.so
 
