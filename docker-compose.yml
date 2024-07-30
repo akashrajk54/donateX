@@ -15,7 +15,7 @@ services:
       - POSTGRES_DB=db_donateX
 
   web:
-    build: .
+    build: donatex-web
     command: ["/bin/bash", "-c", "/usr/wait-for-postgres.sh db python manage.py runserver 0.0.0.0:8000"]
     volumes:
       - .:/app
